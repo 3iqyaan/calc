@@ -3,14 +3,15 @@
 #[cfg(test)]
 mod tests {
     use crate::tokenize::tokenize;
-    use crate::compute::compute;
+    use crate::compute::{eval, to_rpn};
     use crate::errors::Error;
 
     #[test]
     fn addition() {
         let input = "2 + 3";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens).unwrap();
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens).unwrap();
         assert_eq!(result, 5.0);
     }
 
@@ -18,7 +19,8 @@ mod tests {
     fn power_and_mod() {
         let input = "2 ^ 3 % 3";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens).unwrap();
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens).unwrap();
         assert_eq!(result, 2.0); // (2^3) % 3 = 8 % 3 = 2
     }
 
@@ -26,7 +28,8 @@ mod tests {
     fn op_precedence() {
         let input = "2 + 3 * 4";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens).unwrap();
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens).unwrap();
         assert_eq!(result, 14.0); // 2 + (3 * 4)
     }
 
@@ -34,7 +37,8 @@ mod tests {
     fn paren() {
         let input = "(2 + 3) * 4";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens).unwrap();
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens).unwrap();
         assert_eq!(result, 20.0); // (2 + 3) * 4
     }
 
@@ -42,7 +46,8 @@ mod tests {
     fn division_by_zero() {
         let input = "10 / 0";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens);
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens);
         assert!(matches!(result, Err(Error::DivisionByZero)));
     }
 
@@ -50,7 +55,8 @@ mod tests {
     fn insufficient_ops() {
         let input = "5 +";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens);
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens);
         assert!(matches!(result, Err(Error::InsufficientOperands)));
     }
 
@@ -58,7 +64,8 @@ mod tests {
     fn mismatched_paren() {
         let input = "(2 + 3 * 4";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens);
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens);
         assert!(matches!(result, Err(Error::MismatchedParentheses)));
     }
 
@@ -66,7 +73,8 @@ mod tests {
     fn associativity() {
         let input = "2 ^ 3 ^ 2";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens).unwrap();
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens).unwrap();
         assert_eq!(result, 512.0); // 2 ^ (3 ^ 2) = 2 ^ 9 = 512
     }
 
@@ -74,7 +82,8 @@ mod tests {
     fn complex_expr() {
         let input = "3 + 5 * (2 ^ 3) - 4 / 2";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens).unwrap();
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens).unwrap();
         assert_eq!(result, 41.0); // 3 + 5 * (8) - 2 = 3 + 40 - 2 = 41.
     }
 
@@ -82,7 +91,8 @@ mod tests {
     fn floating_ops() {
         let input = "5.5 * 2.0 + 3.3";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens).unwrap();
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens).unwrap();
         assert_eq!(result, 14.3); // 5.5 * 2.0 + 3.3 = 11.0 + 3.3 = 14.3
     }
 
@@ -90,11 +100,13 @@ mod tests {
     fn negative() {
         let input = "-2 + 3";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens).unwrap();
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens).unwrap();
         assert_eq!(result, 1.0); // -2 + 3 = 1.0
         let input2 = "4 * -2";
         let tokens2 = tokenize(input2).unwrap();
-        let result2 = compute(tokens2).unwrap();
+        let tokens2 = to_rpn(tokens2);
+        let result2 = eval(tokens2).unwrap();
         assert_eq!(result2, -8.0); // 4 * -2 = -8.0
     }
 
@@ -102,7 +114,8 @@ mod tests {
     fn multiple_ops() {
         let input = "2 + 3 - 1 * 5 / (2 ^ 2) % 3";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens).unwrap();
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens).unwrap();
         assert_eq!(result, 3.75); // 2 + 3 - 1 * 5 / 4 % 3 = 2 + 3 - 5 / 4 = 5 - 1.25 = 3.75
     }
 
@@ -110,7 +123,8 @@ mod tests {
     fn zero_power() {
         let input = "0 ^ 0";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens).unwrap();
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens).unwrap();
         assert_eq!(result, 1.0); // 0^0 is generally considered as 1
     }
 
@@ -118,7 +132,8 @@ mod tests {
     fn negative_power() {
         let input = "2 ^ -3";
         let tokens = tokenize(input).unwrap();
-        let result = compute(tokens).unwrap();
+        let tokens = to_rpn(tokens);
+        let result = eval(tokens).unwrap();
         assert_eq!(result, 0.125); // 2^-3 = 1/8 = 0.125
     }
 }

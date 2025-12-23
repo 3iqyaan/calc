@@ -76,6 +76,9 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>> {
                 tokens.push(Token::Operator(Operator::Modulus));
                 chars.next();
             }
+            ' ' => {
+                chars.next(); // Skip whitespace
+            }
             _ => {
                 return Err(Error::UnacceptableToken);
             }

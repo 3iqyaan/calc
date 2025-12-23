@@ -2,8 +2,7 @@ use crate::tokenize::{Token, Operator};
 use crate::errors::{Error, Result};
 
 /// Computes the result using the shunting-yard algorithm
-pub fn compute(tokens: Vec<Token>) -> Result<f64> {
-    let tokens = to_rpn(tokens);
+pub fn eval(tokens: Vec<Token>) -> Result<f64> {
 
     let mut stack = Vec::new();
 
@@ -55,7 +54,7 @@ fn is_right_associative(op: &Operator) -> bool {
     matches!(op, Operator::Power)
 }
 
-fn to_rpn(tokens: Vec<Token>) -> Vec<Token> {
+pub fn to_rpn(tokens: Vec<Token>) -> Vec<Token> {
     let mut output = Vec::new();
     let mut ops = Vec::new();
 

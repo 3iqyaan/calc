@@ -32,8 +32,8 @@ fn main() -> Result<()>{
         if !input.is_empty() && input != "exit" {
             input = input.replace(" ", "");
             let tokens = tokenize::tokenize(&input)?;
-            
-            let result = compute::compute(tokens)?;
+            let tokens = compute::to_rpn(tokens);
+            let result = compute::eval(tokens)?;
             println!("Result: {}", result);
 
         }
