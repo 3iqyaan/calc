@@ -12,6 +12,8 @@ pub enum Error{
     DivisionByZero,
     #[error("Mismatched parentheses")]
     MismatchedParentheses,
+    #[error("Unacceptable token encountered")]
+    UnacceptableToken,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

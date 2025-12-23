@@ -1,3 +1,4 @@
+use crate::errors::{Error, Result};
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Token{
@@ -19,7 +20,7 @@ pub enum Operator{
 }
 
 
-pub fn tokenize(input: &str) -> Vec<Token> {
+pub fn tokenize(input: &str) -> Result<Vec<Token>> {
     let mut tokens = Vec::new();
     let mut chars = input.chars().peekable();
 
@@ -76,10 +77,10 @@ pub fn tokenize(input: &str) -> Vec<Token> {
                 chars.next();
             }
             _ => {
-                chars.next(); // Skip unrecognized characters
+                return Err(Error::UnacceptableToken);
             }
         }
     }
 
-    tokens
+    Ok(tokens)
 }
